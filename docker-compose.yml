@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  service_postgres:
+    container_name: postgres_container
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - ./docker/db/data:/var/lib/postgresql/data
+      - postgres-local:/var/lib/postgresql/data
+      - ./docker/db/sql:/docker-entrypoint-initdb.d
+      - ./docker/db/sql/init_extentions.sql:/docker-entrypoint-initdb.d/init_extentions.sql
+    restart: always
+
+  service_pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: example@example.com
+      PGADMIN_DEFAULT_PASSWORD: example
+    ports:
+      - 8080:80
+    volumes:
+      - ./docker/pgadmin4:/var/lib/pgadmin
+    restart: always
+    depends_on:
+      - service_postgres
+
+volumes:
+    postgres-local:
